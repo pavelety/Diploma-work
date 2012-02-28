@@ -13,7 +13,6 @@ public class WordListReader {
     private List wordList = new ArrayList();
     public WordListReader() {
         String word = "";
-        System.out.println(Integer.toString("ё".codePointAt(0))+","+Integer.toString("Ё".codePointAt(0)));
         for (int i=0; i < input.length(); i++) 
             if (input.codePointAt(i) >= 65 & input.codePointAt(i) <= 90 
                     | input.codePointAt(i) >= 97 & input.codePointAt(i) <= 122 
