@@ -17,6 +17,7 @@ public class WordAnalyzer {
     private static DictionaryReader engDictionaryReader;
     private static GrammaReader rusGrammaInfo;
     private static DictionaryReader rusDictionaryReader;
+    
     public static void main(String[] args) throws IOException {
         engGrammaInfo = new GrammaReader("src/main/resources/dicts/eng/egramtab.tab");
         engDictionaryReader = new DictionaryReader("src/main/resources/dicts/eng/morphs.mrd");
