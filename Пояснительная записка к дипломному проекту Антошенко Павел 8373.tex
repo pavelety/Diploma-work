@@ -189,8 +189,22 @@ C             & существительное               & мама\\ \hline
 Запросов к словарю в секунду: 10984
 
 Работа программы, которая сначала загружает весь словарь в оперативную память, а затем по ходу выполнения создается кэш-файл также в оперативной памяти, производит считывание и поиск сначала в кэше, если в кэше данной записи еще не существует до ищет и дублирует её из словаря.
+Та же книга Форда:
+Время чтения словаря: 5c 660мс
+Общее время: 8c 547мс
+Запросов к словарю: 14455. Успешно: 13858
+Cache hit: 45357. Cache miss: 14455
+Запросов в секунду: 20717
 
- 
+\chapter{Струкутра базы данных, хранящей словарь}
+rusDictionary
+create table flexiamodelsids (flexiamodelsid integer primary key);
+create table ancodes (ancode char(2) primary key, partOfSpeech varchar(15) not null, grammems varchar(35) not null);
+create table lemmata (baseStr varchar(20), flexiaModelId integer references flexiamodelsids (flexiamodelsid), counter integer, primary key (basestr, flexiamodelid));
+create table flexiaModels (flexiaModelId integer references flexiamodelsids (flexiamodelsid), ancode char(2) references ancodes (ancode), flexiaStr varchar(10), counter integer, primary key (flexiamodelid, ancode, flexiastr));
+
+
+
 
 \chapter{Код}
 \verbatiminput{/home/pavlin/Diploma-work/dictionary-reader/src/main/java/com/mycompany/dictionaryreader/analyzer/WordAnalyzer.java}
