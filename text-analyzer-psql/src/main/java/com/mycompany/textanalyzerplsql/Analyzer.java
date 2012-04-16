@@ -12,6 +12,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -37,6 +39,12 @@ public class Analyzer {
     //private TreeMap<String, String> engCache;
     //private int countCacheHit;
     //private int countCacheMiss;
+    private PreparedStatement psSelectLemmataEng;
+    private PreparedStatement psSelectFlexiaEng;
+    private PreparedStatement psSelectAncodesEng;
+    private PreparedStatement psSelectLemmataRus;
+    private PreparedStatement psSelectFlexiaRus;
+    private PreparedStatement psSelectAncodesRus;
 
     public Analyzer(Boolean useCache) {
         //this.useCache = useCache;
@@ -47,7 +55,21 @@ public class Analyzer {
          * new TreeMap<String, String>(); }
          */
         try {
+            psSelectLemmataEng = dictionaries.getConnectionEng()
+                    .prepareStatement(selectLemmata);
+            psSelectFlexiaEng = dictionaries.getConnectionEng()
+                    .prepareStatement(selectFlexia);
+            psSelectAncodesEng = dictionaries.getConnectionEng()
+                    .prepareStatement(selectAncodes);
+            psSelectLemmataRus = dictionaries.getConnectionRus()
+                    .prepareStatement(selectLemmata);
+            psSelectFlexiaRus = dictionaries.getConnectionRus()
+                    .prepareStatement(selectFlexia);
+            psSelectAncodesRus = dictionaries.getConnectionRus()
+                    .prepareStatement(selectAncodes);
             fileAnalyze(textFilePath);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
@@ -92,9 +114,11 @@ public class Analyzer {
     private void analyze(String word) {
         if (word.codePointAt(0) >= 65 & word.codePointAt(0) <= 90
                 | word.codePointAt(0) >= 97 & word.codePointAt(0) <= 122) {
-            searchWord(dictionaries.getConnectionEng(), word);
+            searchWord(psSelectLemmataEng, psSelectFlexiaEng, 
+                    psSelectAncodesEng, word);
         } else {
-            searchWord(dictionaries.getConnectionRus(), word);
+            searchWord(psSelectLemmataRus, psSelectFlexiaRus, 
+                    psSelectAncodesRus, word);
         }
     }
 
@@ -113,17 +137,13 @@ public class Analyzer {
      * private String searchInCache(Map<String, String> map, String word) {
      * return map.get(word); }
      */
-    private String searchWord(Connection connect, String word) {
-            String base;
-            String result = "";
-            countObjDictRequest++;
+    private String searchWord(PreparedStatement psSelectLemmata, 
+            PreparedStatement psSelectFlexia, PreparedStatement psSelectAncodes,
+            String word) {
+        String base;
+        String result = "";
+        countObjDictRequest++;
         try {
-            PreparedStatement psSelectLemmata = connect
-                    .prepareStatement(selectLemmata);
-            PreparedStatement psSelectFlexia = connect
-                    .prepareStatement(selectFlexia);
-            PreparedStatement psSelectAncodes = connect
-                    .prepareStatement(selectAncodes);
             for (int i = word.length(); i >= 0; i--) {
                 base = word.toLowerCase().substring(0, i);
                 psSelectLemmata.setString(1, base);
