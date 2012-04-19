@@ -26,9 +26,10 @@ public class GrammaReader {
                 psAncodes.setString(3, (strings.length == 3 ? ""
                         : strings[3]));
                 // карта = анкод + часть речи + оставшаяся строка
-                psAncodes.executeUpdate();
+                psAncodes.addBatch();
             }
             line = bufferedReader.readLine();
         }
+        psAncodes.executeBatch();
     }
 }

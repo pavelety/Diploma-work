@@ -25,15 +25,15 @@ public class DictionaryReader {
     private String insertIntoFlexiamodelsids = "insert into flexiamodelsids "
             + "values (?)";
     private String insertIntoLemmata = "insert into lemmata (basestr, "
-            + "flexiamodelid) values (?,?)";
+            + "flexiamodelid) values (?, ?)";
     private Connection connection;
-    private PreparedStatement psFlexiaModels;
+    //private PreparedStatement psFlexiaModels;
 
     public DictionaryReader(String fileName, Connection connection) 
             throws SQLException, IOException {
         this.fileName = fileName;
         this.connection = connection;
-        psFlexiaModels = connection.prepareStatement(insertIntoFlexiamodels);
+        
         process();
     }
 
@@ -56,27 +56,40 @@ public class DictionaryReader {
             SQLException {
         PreparedStatement psFlexiaModelsIds = connection
                 .prepareStatement(insertIntoFlexiamodelsids);
+        PreparedStatement psFlexiaModels = connection
+                .prepareStatement(insertIntoFlexiamodels);
         int count = Integer.valueOf(reader.readLine());
         for (int i = 0; i < count; i++) {
             psFlexiaModelsIds.setInt(1, i);
-            psFlexiaModelsIds.executeUpdate();
+            psFlexiaModelsIds.addBatch();
+            String backAncode = null;
+            String backSuffix = null;
             for (String line : reader.readLine().split("\\%")) {
-                addFlexia(i, line);
+                String[] fl = line.split("\\*");
+                if (fl.length == 2) {
+                    String ancode = fl[1];
+                    String suffix = fl[0].toLowerCase();
+                    if (!ancode.equalsIgnoreCase(backAncode) 
+                            && !suffix.equalsIgnoreCase(backSuffix)) {
+                        psFlexiaModels.setInt(1, i);
+                        psFlexiaModels.setString(2, ancode);
+                        psFlexiaModels.setString(3, suffix);
+                        psFlexiaModels.addBatch();
+                        backAncode = ancode;
+                        backSuffix = suffix;
+                    }
+                }     
             }
         }
-    }
-
-    private void addFlexia(int i, String line) throws SQLException{
-        String[] fl = line.split("\\*");
-        if (fl.length == 2) {
-            psFlexiaModels.setInt(1, i);
-            psFlexiaModels.setString(2, fl[1]);
-            psFlexiaModels.setString(3, fl[0].toLowerCase()); //анкод, суффикс
-            try {
-                psFlexiaModels.executeUpdate();
-            } catch (SQLException ex) {
-                //пропуск ошибки
-            }
+        try {
+            psFlexiaModelsIds.executeBatch();
+            psFlexiaModels.executeBatch();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            System.out.println(ex.getNextException().toString());
+        } finally {
+            psFlexiaModelsIds.close();
+            psFlexiaModels.close();
         }
     }
 
@@ -86,24 +99,42 @@ public class DictionaryReader {
             reader.readLine();
     }
 
-    private void readWords(BufferedReader reader) throws IOException, SQLException {
+    private void readWords(BufferedReader reader) throws IOException, 
+            SQLException {
         PreparedStatement psLemmata = connection
                 .prepareStatement(insertIntoLemmata);
         int count = Integer.valueOf(reader.readLine()); //число строк (псевдооснов)
+        String backBase = null;
+        int backId = -1;
         for (int i = 0; i < count; i++) {
             String[] wd = reader.readLine().split(" ");
             String wordBase = wd[0].toLowerCase(); //псевдооснова
-            if (wordBase.startsWith("-"))
+            int id = Integer.valueOf(wd[1]);
+            if (wordBase.startsWith("-") || wordBase.equalsIgnoreCase(backBase) 
+                    && backId == id)
                 continue;
             wordBase = "#".equals(wordBase) ? "" : wordBase; //псевдооснова пуста
             psLemmata.setString(1, wordBase);
             //номер парадигмы (номер строки в первой секции) - набор флексий (окончаний)
-            psLemmata.setInt(2, Integer.valueOf(wd[1]));
-            try {
-                psLemmata.executeUpdate();
-            } catch (SQLException ex) {
-                //пропуск повторов
-            }
+            psLemmata.setInt(2, id);
+            psLemmata.addBatch();
+            backBase = wordBase;
+            backId = id;
+            if (i % 6000 == 0)
+                try {
+                    psLemmata.executeBatch();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    System.out.println(ex.getNextException().toString());
+                }
+        }
+        try {
+            psLemmata.executeBatch();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            System.out.println(ex.getNextException().toString());
+        } finally {
+            psLemmata.close();
         }
     }
 }

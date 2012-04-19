@@ -27,11 +27,11 @@ public class DictionaryInitiation {
         PSQLConnection connect = new PSQLConnection();
         try {
             connectionRus = connect.createConnection("rus");
-            //initiateRusDictionaries();
+            initiateRusDictionaries();
             connectionEng = connect.createConnection("eng");
-            //initiateEngDictionaries();
-        //} catch (IOException ex) {
-        //    ex.printStackTrace();
+            initiateEngDictionaries();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }    
