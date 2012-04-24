@@ -201,7 +201,7 @@ rusDictionary
 create table flexiamodelsids (flexiamodelsid integer primary key); 
 create table ancodes (ancode char(2) primary key, partOfSpeech varchar(15) not null, grammems varchar(35) not null); 
 create table lemmata (baseStr varchar(30), flexiaModelId integer references flexiamodelsids (flexiamodelsid), counter integer, primary key (basestr, flexiamodelid)); 
-create table flexiaModels (flexiaModelId integer references flexiamodelsids (flexiamodelsid), ancode char(2) references ancodes (ancode), flexiaStr varchar(15), counter integer, primary key (flexiamodelid, ancode, flexiastr));
+create table flexiaModels (flexiaModelId integer references flexiamodelsids (flexiamodelsid), ancode char(2) references ancodes (ancode), flexiaStr varchar(20), counter integer, primary key (flexiamodelid, ancode, flexiastr));
 
 
 
