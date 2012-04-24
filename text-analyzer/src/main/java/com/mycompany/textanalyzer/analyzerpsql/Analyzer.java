@@ -12,6 +12,8 @@ import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  *
@@ -28,28 +30,27 @@ public class Analyzer implements AnalyzerInterface {
     private int countObjDictSuccess;
     private long timeDictRead;
     private DictionaryInitiation dictionaries;
-    //private Boolean useCache;
-    //private TreeMap<String, String> rusCache;
-    //private TreeMap<String, String> engCache;
-    //private int countCacheHit;
-    //private int countCacheMiss;
+    private Boolean useCache;
+    private TreeMap<String, String> rusCache;
+    private TreeMap<String, String> engCache;
+    private int countCacheHit;
+    private int countCacheMiss;
     private PreparedStatement psSelectLemmataEng;
     private PreparedStatement psSelectFlexiaEng;
     private PreparedStatement psSelectAncodesEng;
     private PreparedStatement psSelectLemmataRus;
     private PreparedStatement psSelectFlexiaRus;
     private PreparedStatement psSelectAncodesRus;
-    private int countCacheHit;
-    private int countCacheMiss;
-
+    
     public void analyze(Boolean useCache, String textFilePath, String encoding) {
         //this.useCache = useCache;
         dictionaries = new DictionaryInitiation();
         timeDictRead = System.currentTimeMillis();
-        /*
-         * if (useCache) { rusCache = new TreeMap<String, String>(); engCache =
-         * new TreeMap<String, String>(); }
-         */
+        this.useCache = useCache;
+        if (useCache) { 
+            rusCache = new TreeMap<String, String>(); 
+            engCache = new TreeMap<String, String>(); 
+        }
         try {
             psSelectLemmataEng = dictionaries.getConnectionEng()
                     .prepareStatement(selectLemmata);
@@ -92,17 +93,17 @@ public class Analyzer implements AnalyzerInterface {
                     | input.codePointAt(i) == 1025 | input.codePointAt(i) == 45) {
                 word += input.substring(i, i + 1);
             } else if (!word.equalsIgnoreCase("")) {
-                //if (useCache) 
-                //analyzeInCache(word);
-                //else 
-                analyze(word);
+                if (useCache) 
+                    analyzeInCache(word);
+                else 
+                    analyze(word);
                 word = "";
             }
-            if (i + 1 == input.length() && !word.equalsIgnoreCase("")) //if (useCache) 
-            //analyzeInCache(word);
-            //else 
-            {
-                analyze(word);
+            if (i + 1 == input.length() && !word.equalsIgnoreCase("")) {
+                if (useCache) 
+                    analyzeInCache(word);
+                else 
+                    analyze(word);
             }
         }
     }
@@ -118,21 +119,31 @@ public class Analyzer implements AnalyzerInterface {
         }
     }
 
-    /*
-     * private void analyzeInCache(String word) { String s; if
-     * (word.codePointAt(0) >= 65 & word.codePointAt(0) <= 90 |
-     * word.codePointAt(0) >= 97 & word.codePointAt(0) <= 122) if
-     * (searchInCache(engCache, word) == null) { countCacheMiss++; s =
-     * searchWord(dictionaries.getDictionary("eng"),
-     * dictionaries.getGramma("eng"), word); engCache.put(word, s==null?"":s); }
-     * else countCacheHit++; else if (searchInCache(rusCache, word) == null) {
-     * countCacheMiss++; s = searchWord(dictionaries.getDictionary("rus"),
-     * dictionaries.getGramma("rus"), word); rusCache.put(word, s==null?"":s); }
-     * else countCacheHit++; }
-     *
-     * private String searchInCache(Map<String, String> map, String word) {
-     * return map.get(word); }
-     */
+    private void analyzeInCache(String word) {
+        String s;
+        if (word.codePointAt(0) >= 65 & word.codePointAt(0) <= 90
+                | word.codePointAt(0) >= 97 & word.codePointAt(0) <= 122)
+            if (searchInCache(engCache, word) == null) {
+                countCacheMiss++;
+                s = searchWord(psSelectLemmataEng, psSelectFlexiaEng, 
+                    psSelectAncodesEng, word);
+                engCache.put(word, s==null?"":s);
+            } else
+                countCacheHit++;
+        else
+            if (searchInCache(rusCache, word) == null) {
+                countCacheMiss++;
+                s = searchWord(psSelectLemmataRus, psSelectFlexiaRus, 
+                    psSelectAncodesRus, word);
+                rusCache.put(word, s==null?"":s);  
+            } else
+                countCacheHit++;
+    }
+    
+    private String searchInCache(Map<String, String> map, String word) {
+        return map.get(word);
+    }
+    
     private String searchWord(PreparedStatement psSelectLemmata, 
             PreparedStatement psSelectFlexia, PreparedStatement psSelectAncodes,
             String word) {
@@ -193,5 +204,4 @@ public class Analyzer implements AnalyzerInterface {
     public int getCountCacheMiss() { 
         return countCacheMiss; 
     }
-    
 }

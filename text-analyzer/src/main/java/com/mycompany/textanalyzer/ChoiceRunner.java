@@ -9,7 +9,7 @@ package com.mycompany.textanalyzer;
  * @author pavel
  */
 public class ChoiceRunner {
-    private final static Boolean useCache = false;
+    private final static Boolean useCache = true;
     private final static Boolean usePSQL = true;
     private final static String textFilePath = "texts/Форд Генри - Моя жизнь, "
             + "мои достижения - 1924.txt";
