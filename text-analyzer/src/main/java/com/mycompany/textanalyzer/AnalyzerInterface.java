@@ -14,7 +14,7 @@ public interface AnalyzerInterface {
     
     void analyze(Boolean useCache, String textFilePath, String encoding);
     
-    void fileAnalyze(String path, String encoding) throws IOException;
+    void fileAnalyze(String textFilePath, String encoding) throws IOException;
     
     int getCountRequest();
     
@@ -25,5 +25,4 @@ public interface AnalyzerInterface {
     int getCountCacheHit();
     
     int getCountCacheMiss();
-    
 }

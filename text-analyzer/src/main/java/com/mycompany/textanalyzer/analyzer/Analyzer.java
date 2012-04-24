@@ -19,15 +19,16 @@ import java.util.*;
  * @author pavel
  */
 public class Analyzer implements AnalyzerInterface {
+    private Boolean useCache;
+    private DictionaryInitiation dictionaries;
     private int countObjDictRequest;
     private int countObjDictSuccess;
-    private long timeDictRead;
-    private DictionaryInitiation dictionaries;
-    private Boolean useCache;
-    private TreeMap<String, String> rusCache;
-    private TreeMap<String, String> engCache;
     private int countCacheHit;
     private int countCacheMiss;
+    private long timeDictRead;
+    private TreeMap<String, String> rusCache;
+    private TreeMap<String, String> engCache;
+
     
     public void analyze(Boolean useCache, String textFilePath, String encoding) {
         this.useCache = useCache;
@@ -44,9 +45,11 @@ public class Analyzer implements AnalyzerInterface {
         }
     }
     
-    public void fileAnalyze(String path, String encoding) throws IOException {
+    public void fileAnalyze(String textFilePath, String encoding) 
+            throws IOException {
         BufferedReader bufferedReader = new BufferedReader(
-                new InputStreamReader(new FileInputStream(path), encoding));
+                new InputStreamReader(new FileInputStream(textFilePath), 
+                encoding));
         while (bufferedReader.ready()) {
             stringAnalyze(bufferedReader.readLine());
         } 

@@ -42,8 +42,9 @@ public class Analyzer implements AnalyzerInterface {
     private PreparedStatement psSelectFlexiaRus;
     private PreparedStatement psSelectAncodesRus;
     
-    public void analyze(Boolean useCache, String textFilePath, String encoding) {
-        //this.useCache = useCache;
+    public void analyze(Boolean useCache, String textFilePath, 
+            String encoding) {
+        this.useCache = useCache;
         dictionaries = new DictionaryInitiation();
         timeDictRead = System.currentTimeMillis();
         this.useCache = useCache;
@@ -74,9 +75,11 @@ public class Analyzer implements AnalyzerInterface {
         }
     }
 
-    public void fileAnalyze(String path, String encoding) throws IOException {
+    public void fileAnalyze(String textFilePath, String encoding) 
+            throws IOException {
         BufferedReader bufferedReader = new BufferedReader(
-                new InputStreamReader(new FileInputStream(path), encoding));
+                new InputStreamReader(new FileInputStream(textFilePath), 
+                encoding));
         while (bufferedReader.ready()) {
             stringAnalyze(bufferedReader.readLine());
         }
