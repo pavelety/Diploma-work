@@ -5,6 +5,7 @@
 package com.mycompany.textanalyzer.analyzerpsql;
 
 import com.mycompany.textanalyzer.AnalyzerInterface;
+import com.mycompany.textanalyzer.Statistics;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,39 +21,39 @@ import java.util.TreeMap;
  * @author pavel
  */
 public class Analyzer implements AnalyzerInterface {
-    private final String selectLemmata = "select flexiamodelid from lemmata "
+    /*private final String selectLemmata = "select flexiamodelid from lemmata "
             + "where basestr=?";
     private final String selectFlexia = "select ancode, flexiastr from "
             + "flexiamodels where flexiamodelid=?";
     private final String selectAncodes = "select partofspeech, grammems from "
-            + "ancodes where ancode=?";
-    private int countObjDictRequest;
-    private int countObjDictSuccess;
-    private long timeDictRead;
+            + "ancodes where ancode=?";*/
     private DictionaryInitiation dictionaries;
     private Boolean useCache;
     private TreeMap<String, String> rusCache;
     private TreeMap<String, String> engCache;
-    private int countCacheHit;
-    private int countCacheMiss;
-    private PreparedStatement psSelectLemmataEng;
+    /*private PreparedStatement psSelectLemmataEng;
     private PreparedStatement psSelectFlexiaEng;
     private PreparedStatement psSelectAncodesEng;
     private PreparedStatement psSelectLemmataRus;
     private PreparedStatement psSelectFlexiaRus;
-    private PreparedStatement psSelectAncodesRus;
+    private PreparedStatement psSelectAncodesRus;*/
+    private Statistics stats;
+    
+    public Analyzer(Statistics stats) {
+        this.stats = stats;
+    }
     
     public void analyze(Boolean useCache, String textFilePath, 
             String encoding) {
         this.useCache = useCache;
         dictionaries = new DictionaryInitiation();
-        timeDictRead = System.currentTimeMillis();
+        stats.setTimeDictRead(System.currentTimeMillis());
         this.useCache = useCache;
         if (useCache) { 
             rusCache = new TreeMap<String, String>(); 
             engCache = new TreeMap<String, String>(); 
         }
-        try {
+        /*try {
             psSelectLemmataEng = dictionaries.getConnectionEng()
                     .prepareStatement(selectLemmata);
             psSelectFlexiaEng = dictionaries.getConnectionEng()
@@ -70,9 +71,9 @@ public class Analyzer implements AnalyzerInterface {
             ex.printStackTrace();
         } catch (IOException ex) {
             ex.printStackTrace();
-        } finally {
+        } finally {*/
             dictionaries.closeConnections();
-        }
+        //}
     }
 
     public void fileAnalyze(String textFilePath, String encoding) 
@@ -81,11 +82,11 @@ public class Analyzer implements AnalyzerInterface {
                 new InputStreamReader(new FileInputStream(textFilePath), 
                 encoding));
         while (bufferedReader.ready()) {
-            stringAnalyze(bufferedReader.readLine());
+//            stringAnalyze(bufferedReader.readLine());
         }
     }
 
-    private void stringAnalyze(String input) {
+/*    private void stringAnalyze(String input) {
         String word = "";
         for (int i = 0; i < input.length(); i++) {
             if (input.codePointAt(i) >= 65 & input.codePointAt(i) <= 90
@@ -127,22 +128,22 @@ public class Analyzer implements AnalyzerInterface {
         if (word.codePointAt(0) >= 65 & word.codePointAt(0) <= 90
                 | word.codePointAt(0) >= 97 & word.codePointAt(0) <= 122)
             if (searchInCache(engCache, word) == null) {
-                countCacheMiss++;
+                stats.increaseCountCacheMiss();
                 s = searchWord(psSelectLemmataEng, psSelectFlexiaEng, 
                     psSelectAncodesEng, word);
                 engCache.put(word, s==null?"":s);
             } else
-                countCacheHit++;
+                stats.increaseCountCacheHit();
         else
             if (searchInCache(rusCache, word) == null) {
-                countCacheMiss++;
+                stats.increaseCountCacheMiss();
                 s = searchWord(psSelectLemmataRus, psSelectFlexiaRus, 
                     psSelectAncodesRus, word);
                 rusCache.put(word, s==null?"":s);  
             } else
-                countCacheHit++;
+                stats.increaseCountCacheHit();
     }
-    
+*/    
     private String searchInCache(Map<String, String> map, String word) {
         return map.get(word);
     }
@@ -152,7 +153,7 @@ public class Analyzer implements AnalyzerInterface {
             String word) {
         String base;
         String result = "";
-        countObjDictRequest++;
+        stats.increaseCountRequest();
         try {
             for (int i = word.length(); i >= 0; i--) {
                 base = word.toLowerCase().substring(0, i);
@@ -178,7 +179,7 @@ public class Analyzer implements AnalyzerInterface {
                     }
                 }
                 if (!result.isEmpty()) {
-                    countObjDictSuccess++;
+                    stats.increaseCountSuccess();
                     break;
                 }    
             }
@@ -186,25 +187,5 @@ public class Analyzer implements AnalyzerInterface {
             ex.printStackTrace();
         }
         return result;
-    }
-
-    public int getCountRequest() {
-        return countObjDictRequest;
-    }
-
-    public int getCountSuccess() {
-        return countObjDictSuccess;
-    }
-
-    public long getTimeDictRead() {
-        return timeDictRead;
-    }
-    
-    public int getCountCacheHit() { 
-        return countCacheHit; 
-    }
-    
-    public int getCountCacheMiss() { 
-        return countCacheMiss; 
     }
 }

@@ -16,13 +16,4 @@ public interface AnalyzerInterface {
     
     void fileAnalyze(String textFilePath, String encoding) throws IOException;
     
-    int getCountRequest();
-    
-    int getCountSuccess();
-    
-    long getTimeDictRead();
-    
-    int getCountCacheHit();
-    
-    int getCountCacheMiss();
 }

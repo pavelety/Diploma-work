@@ -5,6 +5,7 @@
 package com.mycompany.textanalyzer.analyzer;
 
 import com.mycompany.textanalyzer.AnalyzerInterface;
+import com.mycompany.textanalyzer.Statistics;
 import com.mycompany.textanalyzer.dictionary.DictionaryReader;
 import com.mycompany.textanalyzer.dictionary.FlexiaModel;
 import com.mycompany.textanalyzer.dictionary.GrammaReader;
@@ -21,19 +22,18 @@ import java.util.*;
 public class Analyzer implements AnalyzerInterface {
     private Boolean useCache;
     private DictionaryInitiation dictionaries;
-    private int countObjDictRequest;
-    private int countObjDictSuccess;
-    private int countCacheHit;
-    private int countCacheMiss;
-    private long timeDictRead;
     private TreeMap<String, String> rusCache;
     private TreeMap<String, String> engCache;
-
+    private Statistics stats;
+    
+    public Analyzer(Statistics stats) {
+        this.stats = stats;
+    }
     
     public void analyze(Boolean useCache, String textFilePath, String encoding) {
         this.useCache = useCache;
         dictionaries = new DictionaryInitiation();
-        timeDictRead = System.currentTimeMillis();
+        stats.setTimeDictRead(System.currentTimeMillis());
         if (useCache) {
             rusCache = new TreeMap<String, String>();
             engCache = new TreeMap<String, String>();
@@ -95,20 +95,20 @@ public class Analyzer implements AnalyzerInterface {
         if (word.codePointAt(0) >= 65 & word.codePointAt(0) <= 90
                 | word.codePointAt(0) >= 97 & word.codePointAt(0) <= 122)
             if (searchInCache(engCache, word) == null) {
-                countCacheMiss++;
+                stats.increaseCountCacheMiss();
                 s = searchWord(dictionaries.getDictionary("eng"), 
                         dictionaries.getGramma("eng"), word);
                 engCache.put(word, s==null?"":s);
             } else
-                countCacheHit++;
+                stats.increaseCountCacheHit();
         else
             if (searchInCache(rusCache, word) == null) {
-                countCacheMiss++;
+                stats.increaseCountCacheMiss();
                 s = searchWord(dictionaries.getDictionary("rus"), 
                         dictionaries.getGramma("rus"), word);
                 rusCache.put(word, s==null?"":s);  
             } else
-                countCacheHit++;
+                stats.increaseCountCacheHit();
     }
     
     private String searchInCache(Map<String, String> map, String word) {
@@ -119,7 +119,7 @@ public class Analyzer implements AnalyzerInterface {
             GrammaReader grammaInfo, String word) {
         String base;
         String result = null;
-        countObjDictRequest++;
+        stats.increaseCountRequest();
         //word.startsWith(base);!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Сделать поиск с помощью этого!
         List<FlexiaModel> formsOfWord = new ArrayList();
         for (int i = word.length(); i >= 0; i--) {
@@ -135,7 +135,7 @@ public class Analyzer implements AnalyzerInterface {
                 }
                 if (!formsOfWord.isEmpty()){
                     result = base;
-                    countObjDictSuccess++;
+                    stats.increaseCountSuccess();
                     break;
                 }
             }
@@ -146,25 +146,5 @@ public class Analyzer implements AnalyzerInterface {
                     .next().getCode());
         }
         return result;
-    }
-    
-    public int getCountRequest() {
-        return countObjDictRequest;
-    }
-    
-    public int getCountSuccess() {
-        return countObjDictSuccess;
-    }
-    
-    public long getTimeDictRead() {
-        return timeDictRead;
-    }
-    
-    public int getCountCacheHit() {
-        return countCacheHit;
-    }
-    
-    public int getCountCacheMiss() {
-        return countCacheMiss;
     }
 }

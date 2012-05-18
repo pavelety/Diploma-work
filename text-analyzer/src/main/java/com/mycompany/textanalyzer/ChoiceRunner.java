@@ -17,14 +17,15 @@ public class ChoiceRunner {
     
     public static void main(String[] args) {
         Long timeStart = System.currentTimeMillis();
-        AnalyzerInterface ma; 
+        AnalyzerInterface ma;
+        Statistics stats = new Statistics();
         if (usePSQL)
-            ma = new com.mycompany.textanalyzer.analyzerpsql.Analyzer();
+            ma = new com.mycompany.textanalyzer.analyzerpsql.Analyzer(stats);
         else
-            ma = new com.mycompany.textanalyzer.analyzer.Analyzer();
+            ma = new com.mycompany.textanalyzer.analyzer.Analyzer(stats);
         ma.analyze(useCache, textFilePath, encoding);
         Long timeEnd = System.currentTimeMillis();
-        Long timeRead = ma.getTimeDictRead() - timeStart;
+        Long timeRead = stats.getTimeDictRead() - timeStart;
         Long time = timeEnd - timeStart;
         System.out.println("Время чтения словаря: " 
                 + String.valueOf((timeRead - timeRead % 1000) / 1000) + "c " 
@@ -33,19 +34,19 @@ public class ChoiceRunner {
                 + String.valueOf((time - time % 1000) / 1000) + "c " 
                 + String.valueOf(time % 1000) + "мс");
         System.out.println("Запросов к словарю: " 
-                + String.valueOf(ma.getCountRequest()) 
-                + ". Успешно: " + String.valueOf(ma.getCountSuccess()));
+                + String.valueOf(stats.getCountRequest()) 
+                + ". Успешно: " + String.valueOf(stats.getCountSuccess()));
         if (useCache) {
             System.out.println("Cache hit: " 
-                    + String.valueOf(ma.getCountCacheHit() + ". Cache miss: " 
-                    + String.valueOf(ma.getCountCacheMiss())));
+                    + String.valueOf(stats.getCountCacheHit() + ". Cache miss: " 
+                    + String.valueOf(stats.getCountCacheMiss())));
             System.out.println("Запросов в секунду: " 
-                    + String.valueOf((ma.getCountRequest() 
-                    + ma.getCountCacheHit()) * 1000 / (timeEnd 
-                    - ma.getTimeDictRead())));
+                    + String.valueOf((stats.getCountRequest() 
+                    + stats.getCountCacheHit()) * 1000 / (timeEnd 
+                    - stats.getTimeDictRead())));
         } else
             System.out.println("Запросов к словарю в секунду: " 
-                    + String.valueOf(ma.getCountRequest() * 1000 / (timeEnd 
-                    - ma.getTimeDictRead())));
+                    + String.valueOf(stats.getCountRequest() * 1000 / (timeEnd 
+                    - stats.getTimeDictRead())));
     }
 }

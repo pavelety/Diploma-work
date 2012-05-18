@@ -17,7 +17,6 @@ import java.sql.SQLException;
  * forms.
  */
 public class DictionaryReader {
-
     private String fileName;
     private String fileEncoding = "UTF-8";
     private String insertIntoFlexiamodels = "insert into flexiamodels "

@@ -5,7 +5,6 @@
 package com.mycompany.textanalyzer.analyzerpsql;
 
 import com.mycompany.textanalyzer.dictionarypsql.DictionaryReader;
-import com.mycompany.textanalyzer.dictionarypsql.GrammaReader;
 import com.mycompany.textanalyzer.dictionarypsql.PSQLConnection;
 import java.io.IOException;
 import java.sql.Connection;
@@ -38,12 +37,12 @@ public class DictionaryInitiation {
     }
     
     private void initiateRusDictionaries() throws IOException, SQLException {
-        connectionRus.prepareStatement("delete from lemmata").executeUpdate();
+        /*connectionRus.prepareStatement("delete from lemmata").executeUpdate();
         connectionRus.prepareStatement("delete from flexiamodels").executeUpdate();
         connectionRus.prepareStatement("delete from flexiamodelsids").executeUpdate();
         connectionRus.prepareStatement("delete from ancodes").executeUpdate();
         new GrammaReader(rgramtab, connectionRus);
-        new DictionaryReader(rmorphs, connectionRus);
+        */new DictionaryReader(rmorphs, connectionRus);
     }
     
     private void initiateEngDictionaries() throws IOException, SQLException {
@@ -51,7 +50,7 @@ public class DictionaryInitiation {
         connectionEng.prepareStatement("delete from flexiamodels").executeUpdate();
         connectionEng.prepareStatement("delete from flexiamodelsids").executeUpdate();
         connectionEng.prepareStatement("delete from ancodes").executeUpdate();
-        new GrammaReader(egramtab, connectionEng);
+//        new GrammaReader(egramtab, connectionEng);
         new DictionaryReader(emorphs, connectionEng);
     }
     
