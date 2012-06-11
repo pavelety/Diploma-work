@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mycompany.textanalyzer.dictionarypsql;
 
 import java.sql.Connection;
@@ -9,7 +5,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- *
+ * Класс, позволяющий подсоединиться к базе данных, в которой 
+ * хранится или будет храниться словарь 
  * @author pavel
  */
 public class PSQLConnection {
@@ -33,7 +30,8 @@ public class PSQLConnection {
         }
     }
 
-    public Connection createConnection(String lang) throws SQLException {
+    public Connection createConnection(String lang) 
+            throws SQLException {
         if (lang.equalsIgnoreCase("rus")) {
             connectionRus = DriverManager.getConnection(urlPSQL 
                     + dictionaryDBRus, username, password);

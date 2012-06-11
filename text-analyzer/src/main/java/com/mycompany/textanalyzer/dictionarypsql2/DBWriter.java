@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mycompany.textanalyzer.dictionarypsql2;
 
 import com.mycompany.textanalyzer.dictionary.FlexiaModel;
@@ -10,44 +6,61 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
- *
+ * Класс, который записывает словарь в БД
  * @author pavel
  */
 public class DBWriter {
     private Connection connection;
-    private final String insertIntoBases = "insert into bases (baseStr) values "
-            + "(?)";
-    private final String insertIntoSuffixes = "insert into suffixes (suffix) "
-            + "values (?)";
-    private final String insertIntoGrammemInfo = "insert into grammemInfo "
-            + "(basestrid, suffixid, partofspeechid, genderid, animacyid, "
-            + "countid, caseid, aspectid, typeofverbid, typeofvoiceid, tenseid,"
-            + " imperativemood, typeofpronounid, unchanging, shortadid, "
-            + "comparativeadjective, typeofnameid, locativeororganizationid, "
-            + "qualitativeadjective, interrogativerelativeadverbid, noplural, "
-            + "typo, jargonarchaicprofessionalismid, abbreviation, "
-            + "impersonalverb) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-            + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private final String insertIntoBases = "insert into bases "
+            + "(baseStr) values (?)";
+    private final String insertIntoSuffixes = "insert into suffixes"
+            + " (suffix) values (?)";
+    private final String insertIntoRusGrammemInfo = "insert into "
+            + "grammemInfo (basestrid, suffixid, partofspeechid, "
+            + "genderid, animacyid, countid, caseid, aspectid, "
+            + "typeofverbid, typeofvoiceid, tenseid, imperativemood"
+            + ", typeofpronounid, unchanging, shortadid, "
+            + "comparativeadjective, typeofnameid, "
+            + "locativeororganizationid, qualitativeadjective, "
+            + "interrogativerelativeadverbid, noplural, typo, "
+            + "jargonarchaicprofessionalismid, abbreviation, "
+            + "impersonalverb) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
+            + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private final String insertIntoEngGrammemInfo = "insert into "
+            + "grammemInfo (basestrid, suffixid, partofspeechid, "
+            + "genderid, countId, caseId, PNFormId, AdDegreeId, "
+            + "tenseId, typeOfPersonId , PNTypeId, commonName, "
+            + "geographical, properName , plsgId , name, "
+            + "organization) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+            + "?, ?, ?, ?, ?, ?, ?)";
+    
     private Map<String, WordCard> dictionary; 
     private Map<String, Grammem> grammaDictionary;
-    private List<List<FlexiaModel>> wordsFlexias;
-    private Map<Integer, String> suffixes = new HashMap<Integer, String>();
+    private Map<String, Integer> suffixes;
+    private String lang;
     
-    public DBWriter(String morphs, String gramtab, Connection connection) {
+    public DBWriter(Connection connection, String lang, 
+            String morphs, String gramtab) {
         try {
             DictionaryReader dict = new DictionaryReader(morphs);
+            System.out.println("Dictionary (words) loaded.");
             dictionary = dict.getMainDictionary();
-            wordsFlexias = dict.getWordsFlexias();
-            grammaDictionary = new GrammaReader(gramtab).getGrammemDictionary();
+            suffixes = dict.getSuffixes();
+            grammaDictionary = new GrammaReader(lang, gramtab)
+                    .getGrammemDictionary();
+            System.out.println("Dictionary (grammems) loaded.");
             this.connection = connection;
+            this.lang = lang;
             writeSuffixes();
-            writeBases();
+            System.out.println("Suffixes ready.");
+            writeBasesAndGrammemInfo();
+            System.out.println("GrammemInfo ready.");
         } catch (SQLException ex) {
             ex.printStackTrace();
         } catch (IOException ex) {
@@ -58,26 +71,17 @@ public class DBWriter {
     private void writeSuffixes() throws IOException, SQLException {
         PreparedStatement psSuffixes = 
                 connection.prepareStatement(insertIntoSuffixes);
-        Iterator flexiaListIterator = wordsFlexias.iterator();
-        List<FlexiaModel> flexiaList;
-        while (flexiaListIterator.hasNext()) {
-             flexiaList = (List<FlexiaModel>) flexiaListIterator.next();
-             Iterator flexiaIterator = flexiaList.iterator();
-             while (flexiaIterator.hasNext()) {
-                FlexiaModel flexia = (FlexiaModel) flexiaIterator.next();
-                String suffix = flexia.getSuffix();
-                int id = 1;
-                if (!suffixes.containsValue(suffix)) {  
-                    try {
-                        psSuffixes.setString(1, suffix);
-                        psSuffixes.addBatch();
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                        System.out.println(ex.getNextException().toString());
-                    }
-                    suffixes.put(id, suffix);
-                    id++;
-                }
+        int suffixId = 0;
+        for (Entry<String, Integer> suffix : suffixes.entrySet()){
+            try {
+                suffixId++;
+                suffix.setValue(suffixId);
+                psSuffixes.setString(1, suffix.getKey());
+                psSuffixes.addBatch();
+             } catch (SQLException ex) {
+                ex.printStackTrace();
+                System.out.println(ex.getNextException()
+                        .toString());
              }
         }
         try {
@@ -89,44 +93,56 @@ public class DBWriter {
             psSuffixes.close();
         }
     }
-
-    private void writeBases() throws IOException, SQLException {
+    
+    private void writeBasesAndGrammemInfo() throws IOException,
+            SQLException {
         PreparedStatement psBases = 
                 connection.prepareStatement(insertIntoBases);
-        PreparedStatement psGrammemInfo = 
-                connection.prepareStatement(insertIntoGrammemInfo);
-        int id = 1;
-        for (Map.Entry<String, WordCard> wordWithCard : dictionary.entrySet()) {
+        PreparedStatement psGrammemInfo;
+        if (lang.equalsIgnoreCase("rus"))
+            psGrammemInfo = connection.prepareStatement(
+                    insertIntoRusGrammemInfo);
+        else
+            psGrammemInfo = connection.prepareStatement(
+                    insertIntoEngGrammemInfo);
+        int wordBaseId = 0;
+        for (Map.Entry<String, WordCard> wordWithCard 
+                : dictionary.entrySet()) {
             String wordBase = wordWithCard.getKey();
             List<FlexiaModel> wordForms = 
                     wordWithCard.getValue().getWordsForms();
-            id++;
+            wordBaseId++;
             Iterator formsIterator = wordForms.listIterator();
             try {
                 psBases.setString(1, wordBase);
                 psBases.addBatch();
                 while (formsIterator.hasNext()) {
-                    FlexiaModel form = (FlexiaModel) formsIterator.next();
-                    psGrammemInfo.setString(1, wordBase);
-                    psGrammemInfo.setString(2, form.getSuffix());
-                    grammaDictionary.get(form.getCode()).setAll(psGrammemInfo);
+                    FlexiaModel form = (FlexiaModel) 
+                            formsIterator.next();
+                    psGrammemInfo.setInt(1, wordBaseId);
+                    psGrammemInfo.setInt(2, 
+                            suffixes.get(form.getSuffix()));
+                    grammaDictionary.get(form.getCode())
+                            .setAll(psGrammemInfo).addBatch();
                 }
-                
             } catch (SQLException ex) {
                 ex.printStackTrace();
-                System.out.println(ex.getNextException().toString());
+                System.out.println(ex.getNextException()
+                        .toString());
             }
-            if (id % 6000 == 0)
+            if (wordBaseId % 1000 == 0)
                 try {
                     psBases.executeBatch();
                     psGrammemInfo.executeBatch();
                 } catch (SQLException ex) {
                     ex.printStackTrace();
-                    System.out.println(ex.getNextException().toString());
+                    System.out.println(ex.getNextException()
+                            .toString());
                 }
         }
         try {
             psBases.executeBatch();
+            psGrammemInfo.executeBatch();
         } catch (SQLException ex) {
             ex.printStackTrace();
             System.out.println(ex.getNextException().toString());

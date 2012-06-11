@@ -1,18 +1,16 @@
 package com.mycompany.textanalyzer.dictionary;
 
 /**
- * Represent information of how word form created from it imutible part.
- * code, prefix, suffix
+ * Представляет информацию о создании слова: акнод, суффикс
+ * @author pavel
  */
 public class FlexiaModel {
     private String code;
     private String suffix;
-    private String prefix;
 
-    public FlexiaModel(String code, String suffix, String prefix) {
+    public FlexiaModel(String code, String suffix) {
         this.code = code;
         this.suffix = suffix;
-        this.prefix = prefix;
     }
 
     public String getCode() {
@@ -31,16 +29,8 @@ public class FlexiaModel {
         this.suffix = suffix;
     }
 
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-
     public String create(String s) {
-        return prefix + s + suffix;
+        return s + suffix;
     }
 
     @Override
@@ -48,7 +38,6 @@ public class FlexiaModel {
         return "FlexiaModel{" +
                 "code='" + code + '\'' +
                 ", suffix='" + suffix + '\'' +
-                ", prefix='" + prefix + '\'' +
                 '}';
     }
 }

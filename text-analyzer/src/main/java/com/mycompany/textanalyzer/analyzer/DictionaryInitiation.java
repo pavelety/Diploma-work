@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mycompany.textanalyzer.analyzer;
 
 import com.mycompany.textanalyzer.dictionary.DictionaryReader;
@@ -9,7 +5,7 @@ import com.mycompany.textanalyzer.dictionary.GrammaReader;
 import java.io.IOException;
 
 /**
- *
+ * Класс инициации словарей в объекты.
  * @author pavel
  */
 public class DictionaryInitiation {
@@ -17,10 +13,14 @@ public class DictionaryInitiation {
     private DictionaryReader engDictionaryReader;
     private GrammaReader rusGrammaInfo;
     private DictionaryReader rusDictionaryReader;
-    private final String egramtab = "src/main/resources/dicts/eng/egramtab.tab";
-    private final String emorphs = "src/main/resources/dicts/eng/morphs.mrd";
-    private final String rgramtab = "src/main/resources/dicts/rus/rgramtab.tab";
-    private final String rmorphs = "src/main/resources/dicts/rus/morphs.mrd";
+    private final String egramtab = "src/main/resources/dicts/eng/"
+            + "egramtab.tab";
+    private final String emorphs = "src/main/resources/dicts/eng/"
+            + "morphs.mrd";
+    private final String rgramtab = "src/main/resources/dicts/rus/"
+            + "rgramtab.tab";
+    private final String rmorphs = "src/main/resources/dicts/rus/"
+            + "morphs.mrd";
     
     protected DictionaryInitiation() {
         initiateRusDictionaries();

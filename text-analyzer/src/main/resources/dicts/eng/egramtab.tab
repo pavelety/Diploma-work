@@ -104,7 +104,7 @@ fg 1 NOUN prop,poss
 
 xa 1 CONJ               
 xb 1 INT              
-xc 1 PREP             
+xc 1 PREP
 xd 1 PART             
 xf 1 ARTICLE
 xi 1 NUMERAL
@@ -112,7 +112,7 @@ xp 1 ORDNUM
 yc 1 POSS plsq
 yd 1 POSS plsgs
 
-xx 1 NOUN prop sg pl
+xx 1 NOUN prop,sg,pl
 
 // type ancodes 
 za 1 * geo        

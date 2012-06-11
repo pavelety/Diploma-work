@@ -4,15 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represent word and all it forms.
+ * Представляет слово и все его формы
+ * @author pavel
  */
 public class WordCard {
     private String canonicalForm;
     private String base;
     private String canonicalSuffix;
-    private List<FlexiaModel> wordsForms = new ArrayList<FlexiaModel>();
+    private int paradigmId;
+    private List<FlexiaModel> wordsForms 
+            = new ArrayList<FlexiaModel>();
 
-    public WordCard(String canonicalForm, String base, String canonicalSuffix) {
+    public WordCard(String canonicalForm, 
+            String base, String canonicalSuffix) {
         this.canonicalForm = canonicalForm;
         this.canonicalSuffix = canonicalSuffix;
         this.base = base;
@@ -37,6 +41,10 @@ public class WordCard {
     public List<FlexiaModel> getWordsForms() {
         return wordsForms;
     }
+    
+    public int getParadigmId() {
+        return paradigmId;
+    }
 
     public void setCanonicalForm(String canonicalForm) {
         this.canonicalForm = canonicalForm;
@@ -53,7 +61,11 @@ public class WordCard {
     public void setWordsForms(List<FlexiaModel> wordsForms) {
         this.wordsForms = wordsForms;
     }
-
+    
+    public void setParadigmId(int paradigmId) {
+        this.paradigmId = paradigmId;
+    }
+    
     @Override
     public String toString() {
         return "WordCard{" +
