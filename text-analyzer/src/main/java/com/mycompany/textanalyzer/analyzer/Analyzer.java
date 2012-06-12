@@ -11,6 +11,7 @@ import java.util.*;
 /**
  * Класс анализатора, который использует словарь, хранимый в объектах
  * классов (в оперативной памяти).
+ * (35000 слов в секунду)
  * @author pavel
  */
 public class Analyzer implements AnalyzerInterface {
@@ -40,6 +41,7 @@ public class Analyzer implements AnalyzerInterface {
     }
     
     protected void analyzeWord(String word, boolean useCache) {
+        stats.increaseCountWords();
         if (useCache)
             analyzeInCache(word);
         else 
@@ -63,7 +65,6 @@ public class Analyzer implements AnalyzerInterface {
                 | word.codePointAt(0) >= 97 
                 & word.codePointAt(0) <= 122)
             if (searchInCache(engCache, word) == null) {
-                stats.increaseCountCacheMiss();
                 s = searchWord(dictionaries.getDictionary("eng"), 
                         dictionaries.getGramma("eng"), word);
                 engCache.put(word, s==null?"":s);
@@ -71,7 +72,6 @@ public class Analyzer implements AnalyzerInterface {
                 stats.increaseCountCacheHit();
         else
             if (searchInCache(rusCache, word) == null) {
-                stats.increaseCountCacheMiss();
                 s = searchWord(dictionaries.getDictionary("rus"), 
                         dictionaries.getGramma("rus"), word);
                 rusCache.put(word, s==null?"":s);  

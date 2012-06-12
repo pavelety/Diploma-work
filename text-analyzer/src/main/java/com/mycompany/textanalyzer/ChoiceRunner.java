@@ -16,30 +16,74 @@ public class ChoiceRunner {
     private final static String encoding = "UTF-8";
     
     public static void main(String[] args) {
-        Statistics stats = new Statistics();
+        /*Statistics stats = new Statistics();
         AnalyzerInterface ai = null;
         if (usePSQL)
             switch (version) {
                 case 1:
-                    ai = new com.mycompany.textanalyzer.analyzerpsql
+                    ai = new com.mycompany.textanalyzer.psql.v1.analyzer
                             .Analyzer(stats);   
                     break;
                 case 2:
-                    ai = new com.mycompany.textanalyzer.analyzerpsql2
+                    ai = new com.mycompany.textanalyzer.psql.v2.analyzer
                             .Analyzer(stats);   
                     break;
                 case 3:
-                    ai = new com.mycompany.textanalyzer.analyzerpsql3
+                    ai = new com.mycompany.textanalyzer.psql.v3.analyzer
                             .Analyzer(stats);   
                     break;
                 case 4:
-                    ai = new com.mycompany.textanalyzer.analyzerpsql4
+                    ai = new com.mycompany.textanalyzer.psql.v3_2.analyzer
                             .Analyzer(stats);   
                     break;    
             }
         else
             ai = new com.mycompany.textanalyzer.analyzer
                     .Analyzer(stats);
+        ai.analyze(useCache, textFilePath, encoding);
+        stats.end();
+        stats.print(useCache);
+        */
+        AnalyzerInterface ai;
+        Statistics stats; 
+        stats = new Statistics();
+        ai = new com.mycompany.textanalyzer.analyzer
+                .Analyzer(stats);
+        ai.analyze(useCache, textFilePath, encoding);
+        stats.end();
+        stats.print(useCache);
+        
+        stats = new Statistics();
+        ai = new com.mycompany.textanalyzer.psql.v1.analyzer
+                            .Analyzer(stats); 
+        ai.analyze(useCache, textFilePath, encoding);
+        stats.end();
+        stats.print(useCache);
+        
+        stats = new Statistics();
+        ai = new com.mycompany.textanalyzer.psql.v2.analyzer
+                            .Analyzer(stats); 
+        ai.analyze(useCache, textFilePath, encoding);
+        stats.end();
+        stats.print(useCache);
+        
+        stats = new Statistics();
+        ai = new com.mycompany.textanalyzer.psql.v3.analyzer
+                            .Analyzer(stats); 
+        ai.analyze(useCache, textFilePath, encoding);
+        stats.end();
+        stats.print(useCache);
+        
+        stats = new Statistics();
+        ai = new com.mycompany.textanalyzer.psql.v3_1.analyzer
+                            .Analyzer(stats); 
+        ai.analyze(useCache, textFilePath, encoding);
+        stats.end();
+        stats.print(useCache);
+        
+        stats = new Statistics();
+        ai = new com.mycompany.textanalyzer.psql.v3_2.analyzer
+                            .Analyzer(stats); 
         ai.analyze(useCache, textFilePath, encoding);
         stats.end();
         stats.print(useCache);

@@ -1,4 +1,4 @@
-package com.mycompany.textanalyzer.dictionarypsql2;
+package com.mycompany.textanalyzer.psql.v3.dictionary;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -420,46 +420,46 @@ public class Grammem {
     
     public PreparedStatement setAll(PreparedStatement grammemInfo) {
         try {
-            grammemInfo.setInt(3, partOfSpeechId);
+            grammemInfo.setInt(2, partOfSpeechId);
             if (lang.equalsIgnoreCase("rus")) {
-                grammemInfo.setInt(4, genderId);
-                grammemInfo.setInt(5, animacy);
-                grammemInfo.setInt(6, count);
-                grammemInfo.setInt(7, caseId);
-                grammemInfo.setInt(8, aspect);
-                grammemInfo.setInt(9, typeOfVerb);
-                grammemInfo.setInt(10, typeOfVoice);
-                grammemInfo.setInt(11, tenseId);
-                grammemInfo.setInt(12, imperativeMood);
-                grammemInfo.setInt(13, typeOfPronounId);
-                grammemInfo.setInt(14, unchanging);
-                grammemInfo.setInt(15, shortAd);
-                grammemInfo.setInt(16, comparativeAdjective);
-                grammemInfo.setInt(17, typeOfNameId);
-                grammemInfo.setInt(18, locativeOrOrganization);
-                grammemInfo.setInt(19, qualitativeAdjective);
-                grammemInfo.setInt(20, interrogativeRelativeAdverb);
-                grammemInfo.setInt(21, noPlural);
-                grammemInfo.setInt(22, typo);
-                grammemInfo.setInt(23, 
-                        jargonArchaicProfessionalismId);
-                grammemInfo.setInt(24, abbreviation);
-                grammemInfo.setInt(25, impersonalVerb);
-            } else {
-                grammemInfo.setInt(4, genderId);
-                grammemInfo.setInt(5, countId);
+                grammemInfo.setInt(3, genderId);
+                grammemInfo.setInt(4, animacy);
+                grammemInfo.setInt(5, count);
                 grammemInfo.setInt(6, caseId);
-                grammemInfo.setInt(7, pnFormId);
-                grammemInfo.setInt(8, adDegreeId);
-                grammemInfo.setInt(9, tenseId);
-                grammemInfo.setInt(10, typeOfPersonId);
-                grammemInfo.setInt(11, pnTypeId);
-                grammemInfo.setInt(12, commonName);
-                grammemInfo.setInt(13, geographical);
-                grammemInfo.setInt(14, properName);
-                grammemInfo.setInt(15, plsgId);
-                grammemInfo.setInt(16, name);
-                grammemInfo.setInt(17, organization);
+                grammemInfo.setInt(7, aspect);
+                grammemInfo.setInt(8, typeOfVerb);
+                grammemInfo.setInt(9, typeOfVoice);
+                grammemInfo.setInt(10, tenseId);
+                grammemInfo.setInt(11, imperativeMood);
+                grammemInfo.setInt(12, typeOfPronounId);
+                grammemInfo.setInt(13, unchanging);
+                grammemInfo.setInt(14, shortAd);
+                grammemInfo.setInt(15, comparativeAdjective);
+                grammemInfo.setInt(16, typeOfNameId);
+                grammemInfo.setInt(17, locativeOrOrganization);
+                grammemInfo.setInt(18, qualitativeAdjective);
+                grammemInfo.setInt(19, interrogativeRelativeAdverb);
+                grammemInfo.setInt(20, noPlural);
+                grammemInfo.setInt(21, typo);
+                grammemInfo.setInt(22, 
+                        jargonArchaicProfessionalismId);
+                grammemInfo.setInt(23, abbreviation);
+                grammemInfo.setInt(24, impersonalVerb);
+            } else {
+                grammemInfo.setInt(3, genderId);
+                grammemInfo.setInt(4, countId);
+                grammemInfo.setInt(5, caseId);
+                grammemInfo.setInt(6, pnFormId);
+                grammemInfo.setInt(7, adDegreeId);
+                grammemInfo.setInt(8, tenseId);
+                grammemInfo.setInt(9, typeOfPersonId);
+                grammemInfo.setInt(10, pnTypeId);
+                grammemInfo.setInt(11, commonName);
+                grammemInfo.setInt(12, geographical);
+                grammemInfo.setInt(13, properName);
+                grammemInfo.setInt(14, plsgId);
+                grammemInfo.setInt(15, name);
+                grammemInfo.setInt(16, organization);
             }    
         } catch (SQLException ex) {
             ex.printStackTrace();

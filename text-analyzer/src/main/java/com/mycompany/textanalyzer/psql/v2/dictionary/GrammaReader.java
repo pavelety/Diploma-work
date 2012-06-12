@@ -1,4 +1,4 @@
-package com.mycompany.textanalyzer.dictionarypsql2;
+package com.mycompany.textanalyzer.psql.v2.dictionary;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

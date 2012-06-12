@@ -1,4 +1,4 @@
-package com.mycompany.textanalyzer.analyzerpsql2;
+package com.mycompany.textanalyzer.psql.v3.analyzer;
 
 import com.mycompany.textanalyzer.AnalyzerInterface;
 import com.mycompany.textanalyzer.Statistics;
@@ -11,44 +11,48 @@ import java.util.Map;
 
 /**
  * Класс анализатора: делает морфологический анализ слова, используя
- * БД (<1 слова в секунду)
+ * БД dictionaryr/e
+ * Поиск ведется с помощью двух запросов, используя like
+ * (4 слова в секунду)
  * @author pavel
  */
 public class Analyzer implements AnalyzerInterface {
-    private final String selectGrammemId = "select grammeminfo.id"
-            + " from grammeminfo, bases, suffixes where ? like "
-            + "bases.baseStr||'%' and grammeminfo.baseStrId=bases.id "
-            + "and bases.baseStr||suffixes.suffix=? and "
-            + "grammeminfo.suffixid=suffixes.id";
-    private final String selectGrammemInfoEng = "select bases.basestr,"
-            + " suffixes.suffix, partsOfSpeeches.type, genders.type"
-            + ", count.type, cases.type, PNForms.type, "
+    private final String selectGrammemId = "select lexems.id from "
+            + "lexems, bases, suffixes, flexiamodels, ancodes where"
+            + " ? like bases.baseStr||'%' and lexems.baseStrId="
+            + "bases.id and bases.baseStr||suffixes.suffix=? and "
+            + "lexems.paradigmid=flexiamodels.paradigmid and "
+            + "flexiamodels.suffixid=suffixes.id and "
+            + "flexiamodels.ancodeid=ancodes.id";
+    private final String selectLexemEng = "select bases.basestr, "
+            + "suffixes.suffix, partsOfSpeeches.type"
+            + ", genders.type, count.type, cases.type, PNForms.type, "
             + "AdDegrees.type, tenses.type, typesOfPerson.type, "
             + "PNTypes.type, commonName.type, geographical.type, "
             + "properName.type, plsg.type, name.type, "
-            + "organization.type from grammeminfo, bases, suffixes,"
-            + " partsOfSpeeches, genders, count, cases, PNForms, "
-            + "AdDegrees, tenses, typesOfPerson, PNTypes, "
-            + "commonName, geographical, properName, plsg, name, "
-            + "organization where grammeminfo.id=? and "
-            + "grammeminfo.baseStrId=bases.id and "
-            + "grammeminfo.suffixid=suffixes.id and "
-            + "grammeminfo.partOfSpeechId=partsOfSpeeches.id and "
-            + "grammeminfo.genderId=genders.id and "
-            + "grammeminfo.countId=count.id and grammeminfo.caseId="
-            + "cases.id and grammeminfo.PNFormId=PNForms.id and "
-            + "grammeminfo.AdDegreeId=AdDegrees.id and "
-            + "grammeminfo.tenseId=tenses.id and "
-            + "grammeminfo.typeOfPersonId=typesOfPerson.id and "
-            + "grammeminfo.PNTypeId=PNTypes.id and "
-            + "grammeminfo.commonName=commonName.id and "
-            + "grammeminfo.geographical=geographical.id and "
-            + "grammeminfo.properName=properName.id and "
-            + "grammeminfo.plsgId=plsg.id and grammeminfo.name="
-            + "name.id and grammeminfo.organization="
-            + "organization.id";
-    private final String selectGrammemInfoRus = "select "
-            + "bases.basestr, suffixes.suffix, partsOfSpeeches.type"
+            +  "organization.type"
+            + " from ancodes, lexems, flexiamodels, bases, suffixes"
+            + ", partsOfSpeeches" 
+            + ", genders, count, cases, PNForms, AdDegrees, tenses, "
+            + "typesOfPerson, PNTypes, commonName, geographical, "
+            + "properName, plsg, name, organization"
+            + " where bases.id=? and lexems.baseStrId=bases.id and "
+            + "bases.basestr||suffixes.suffix=? and lexems.paradigmid="
+            + "flexiamodels.paradigmid and flexiamodels.suffixid=suffixes.id "
+            + "and flexiamodels.ancodeid=ancodes.id and "
+            + "ancodes.partOfSpeechId=partsOfSpeeches.id"
+            + "and ancodes.genderId=genders.id and ancodes.countId="
+            + "count.id and ancodes.caseId=cases.id and "
+            + "ancodes.PNFormId=PNForms.id and ancodes.AdDegreeId="
+            + "AdDegrees.id and ancodes.tenseId=tenses.id and "
+            + "ancodes.typeOfPersonId=typesOfPerson.id and "
+            + "ancodes.PNTypeId=PNTypes.id and ancodes.commonName="
+            + "commonName.id and ancodes.geographical="
+            + "geographical.id and ancodes.properName=properName.id"
+            + " and ancodes.plsgId=plsg.id and ancodes.name=name.id"
+            + " and ancodes.organization=organization.id;";
+    private final String selectLexemRus = "select bases.basestr, "
+            + "suffixes.suffix, partsOfSpeeches.type"
             + ", genders.type, animacy.type, count.type, cases.type"
             + ", aspects.type, typesOfVerbs.type, "
             + "typesOfVoices.type, tenses.type, imperativeMood.type"
@@ -58,52 +62,52 @@ public class Analyzer implements AnalyzerInterface {
             + "qualitativeAdjective.type, "
             + "interrogativeRelativeAdverb.type, noPlural.type, "
             + "typo.type, jargonArchaicProfessionalism.type, "
-            + "abbreviation.type, impersonalVerb.type from "
-            + "grammeminfo, bases, suffixes, partsOfSpeeches, "
-            + "genders, animacy, count, cases, aspects, "
-            + "typesOfVerbs, typesOfVoices, tenses, "
-            + "imperativeMood, typesOfPronouns, unchanging, shortAd"
-            + ", comparativeAdjective, typesOfNames, "
+            + "abbreviation.type, impersonalVerb.type"
+            + " from ancodes, lexems, bases, suffixes, flexiamodels"
+            + ", partsOfSpeeches"
+            + ", genders, animacy, count, cases, aspects, "
+            + "typesOfVerbs, typesOfVoices, tenses, imperativeMood,"
+            + " typesOfPronouns, unchanging, shortAd, "
+            + "comparativeAdjective, typesOfNames, "
             + "locativeOrOrganization, qualitativeAdjective, "
             + "interrogativeRelativeAdverb, noPlural, typo, "
             + "jargonArchaicProfessionalism, abbreviation, "
-            + "impersonalVerb where grammeminfo.id=? and "
-            + "grammeminfo.baseStrId=bases.id and "
-            + "grammeminfo.suffixId=suffixes.id and "
-            + "grammeminfo.partOfSpeechId=partsOfSpeeches.id and "
-            + "grammeminfo.genderId=genders.id and "
-            + "grammeminfo.animacyId=animacy.id and "
-            + "grammeminfo.countId=count.id and grammeminfo.caseId="
-            + "cases.id and grammeminfo.aspectId=aspects.id and "
-            + "grammeminfo.typeOfVerbId=typesOfVerbs.id and "
-            + "grammeminfo.typeOfVoiceId=typesOfVoices.id and "
-            + "grammeminfo.tenseId=tenses.id and "
-            + "grammeminfo.imperativeMood=imperativeMood.id and "
-            + "grammeminfo.typeOfPronounId=typesOfPronouns.id and "
-            + "grammeminfo.unchanging=unchanging.id and "
-            + "grammeminfo.shortAdId=shortAd.id and "
-            + "grammeminfo.comparativeAdjective="
-            + "comparativeAdjective.id and grammeminfo.typeOfNameId"
-            + "=typesOfNames.id and "
-            + "grammeminfo.locativeOrOrganizationId="
+            + "impersonalVerb"
+            + " where bases.id=? and lexems.baseStrId=bases.id and "
+            + "bases.basestr||suffixes.suffix=? and "
+            + "lexems.paradigmid=flexiamodels.paradigmid and "
+            + "flexiamodels.suffixid=suffixes.id and "
+            + "flexiamodels.ancodeid=ancodes.id and "
+            + "ancodes.partOfSpeechId=partsOfSpeeches.id"
+            + " and ancodes.genderId=genders.id and "
+            + "ancodes.animacyId=animacy.id and ancodes.countId="
+            + "count.id and ancodes.caseId=cases.id and "
+            + "ancodes.aspectId=aspects.id and ancodes.typeOfVerbId"
+            + "=typesOfVerbs.id and ancodes.typeOfVoiceId="
+            + "typesOfVoices.id and ancodes.tenseId=tenses.id and "
+            + "ancodes.imperativeMood=imperativeMood.id and "
+            + "ancodes.typeOfPronounId=typesOfPronouns.id and "
+            + "ancodes.unchanging=unchanging.id and "
+            + "ancodes.shortAdId=shortAd.id and "
+            + "ancodes.comparativeAdjective=comparativeAdjective.id"
+            + " and ancodes.typeOfNameId=typesOfNames.id and "
+            + "ancodes.locativeOrOrganizationId="
             + "locativeOrOrganization.id and "
-            + "grammeminfo.qualitativeAdjective="
-            + "qualitativeAdjective.id and "
-            + "grammeminfo.interrogativeRelativeAdverbId="
-            + "interrogativeRelativeAdverb.id and "
-            + "grammeminfo.noPlural=noPlural.id and "
-            + "grammeminfo.typo=typo.id and "
-            + "grammeminfo.jargonArchaicProfessionalismId="
+            + "ancodes.qualitativeAdjective=qualitativeAdjective.id"
+            + " and ancodes.interrogativeRelativeAdverbId="
+            + "interrogativeRelativeAdverb.id and ancodes.noPlural="
+            + "noPlural.id and ancodes.typo=typo.id and "
+            + "ancodes.jargonArchaicProfessionalismId="
             + "jargonArchaicProfessionalism.id and "
-            + "grammeminfo.abbreviation=abbreviation.id and "
-            + "grammeminfo.impersonalVerb=impersonalVerb.id";
+            + "ancodes.abbreviation=abbreviation.id and "
+            + "ancodes.impersonalVerb=impersonalVerb.id";
     private DictionaryInitiation dictionaries;
     private Map<String, String> rusCache;
     private Map<String, String> engCache;
     private PreparedStatement psSelectGrammemIdRus;
     private PreparedStatement psSelectGrammemIdEng;
-    private PreparedStatement psSelectGrammemInfoRus;
-    private PreparedStatement psSelectGrammemInfoEng;
+    private PreparedStatement psSelectLexemRus;
+    private PreparedStatement psSelectLexemEng;
     private Statistics stats;
     
     public Analyzer(Statistics stats) {
@@ -123,15 +127,15 @@ public class Analyzer implements AnalyzerInterface {
                     .prepareStatement(selectGrammemId);
             psSelectGrammemIdEng = dictionaries.getConnectionEng()
                     .prepareStatement(selectGrammemId);
-            psSelectGrammemInfoRus = dictionaries.getConnectionRus()
-                    .prepareStatement(selectGrammemInfoRus);
-            psSelectGrammemInfoEng = dictionaries.getConnectionEng()
-                    .prepareStatement(selectGrammemInfoEng);
+            psSelectLexemRus = dictionaries.getConnectionRus()
+                    .prepareStatement(selectLexemRus);
+            psSelectLexemEng = dictionaries.getConnectionEng()
+                    .prepareStatement(selectLexemEng);
             Tokenizer token = new Tokenizer(textFilePath, encoding);
             String word = token.getWord();
-            //while (word != null) {
-            for (int i = 1; i < 50; i++) {
-                System.out.println(i);
+            while (word != null) {
+//            for (int i = 1; i < 50; i++) {
+//                System.out.println(i);
                 analyzeWord(word, useCache);
                 word = token.getWord();
             }
@@ -143,6 +147,7 @@ public class Analyzer implements AnalyzerInterface {
     }
 
     private void analyzeWord(String word, boolean useCache) {
+        stats.increaseCountWords();
         if (useCache)
             analyzeInCache(word);
         else 
@@ -154,10 +159,10 @@ public class Analyzer implements AnalyzerInterface {
                 | word.codePointAt(0) >= 97 & word.codePointAt(0) 
                 <= 122) {
             searchWord(psSelectGrammemIdEng, 
-                    psSelectGrammemInfoEng, "eng", word);
+                    psSelectLexemEng, "eng", word);
         } else {
             searchWord(psSelectGrammemIdRus, 
-                    psSelectGrammemInfoRus, "rus", word);
+                    psSelectLexemRus, "rus", word);
         }
     }
 
@@ -167,18 +172,16 @@ public class Analyzer implements AnalyzerInterface {
                 | word.codePointAt(0) >= 97 & word.codePointAt(0) 
                 <= 122)
             if (searchInCache(engCache, word) == null) {
-                stats.increaseCountCacheMiss();
                 s = searchWord(psSelectGrammemIdEng, 
-                        psSelectGrammemInfoEng, "eng", word);
-                engCache.put(word, s==null?"":s);
+                        psSelectLexemEng, "eng", word);
+                engCache.put(word, s == null ? "" : s);
             } else
                 stats.increaseCountCacheHit();
         else
             if (searchInCache(rusCache, word) == null) {
-                stats.increaseCountCacheMiss();
                 s = searchWord(psSelectGrammemIdRus, 
-                        psSelectGrammemInfoRus, "rus", word);
-                rusCache.put(word, s==null?"":s);  
+                        psSelectLexemRus, "rus", word);
+                rusCache.put(word, s == null ? "" : s);  
             } else
                 stats.increaseCountCacheHit();
     }
@@ -189,7 +192,7 @@ public class Analyzer implements AnalyzerInterface {
     }
     
     private String searchWord(PreparedStatement psSelectGrammemId,
-            PreparedStatement psSelectGrammemInfo, String lang, 
+            PreparedStatement psSelectLexem, String lang, 
             String word) {
         String result = "";
         String grammem;
@@ -200,10 +203,11 @@ public class Analyzer implements AnalyzerInterface {
             ResultSet rsSelectGrammemId 
                     = psSelectGrammemId.executeQuery();
             while (rsSelectGrammemId.next()) {
-                psSelectGrammemInfo.setInt(1, 
+                psSelectLexem.setInt(1, 
                         rsSelectGrammemId.getInt(1));
+                psSelectLexem.setString(2, word);
                 ResultSet rsSelectGrammemInfo 
-                        = psSelectGrammemInfo.executeQuery();
+                        = psSelectLexem.executeQuery();
                 while (rsSelectGrammemInfo.next()) {
                     if (lang.equalsIgnoreCase("eng"))
                         for (int i = 1; i <= 17; i++){

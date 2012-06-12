@@ -1,4 +1,4 @@
-package com.mycompany.textanalyzer.dictionarypsql2;
+package com.mycompany.textanalyzer.psql.v2.dictionary;
 
 import com.mycompany.textanalyzer.dictionary.FlexiaModel;
 import com.mycompany.textanalyzer.dictionary.WordCard;

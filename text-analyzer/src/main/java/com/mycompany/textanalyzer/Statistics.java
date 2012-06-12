@@ -10,13 +10,14 @@ public class Statistics {
     private int countObjDictSuccess;
     private long timeDictRead;
     private int countCacheHit;
-    private int countCacheMiss;
+    private int countWords;
     private Long timeStart;
     private Long timeEnd;
     
     public Statistics() {
         timeStart = System.currentTimeMillis();
     }
+    
     public void increaseCountRequest() {
         countObjDictRequest++;
     }
@@ -33,28 +34,8 @@ public class Statistics {
         countCacheHit++; 
     }
     
-    public void increaseCountCacheMiss() { 
-        countCacheMiss++; 
-    }
-    
-    public int getCountRequest() {
-        return countObjDictRequest;
-    }
-
-    public int getCountSuccess() {
-        return countObjDictSuccess;
-    }
-
-    public long getTimeDictRead() {
-        return timeDictRead;
-    }
-    
-    public int getCountCacheHit() { 
-        return countCacheHit; 
-    }
-    
-    public int getCountCacheMiss() { 
-        return countCacheMiss; 
+    public void increaseCountWords() { 
+        countWords++; 
     }
     
     public void end() {
@@ -62,31 +43,30 @@ public class Statistics {
     }
     
     public void print(boolean useCache) {
-        Long timeRead = getTimeDictRead() - timeStart;
-        Long time = timeEnd - timeStart;
+        Long timeRead = timeDictRead - timeStart;
+        Long timeAnalyze = timeEnd - timeDictRead;
         System.out.println("Время чтения словаря: " 
                 + String.valueOf((timeRead - timeRead % 1000) 
                 / 1000) + "c " + String.valueOf(timeRead % 1000) 
-                + "мс");
-        System.out.println("Общее время: " + String.valueOf((time 
-                - time % 1000) / 1000) + "c " + String.valueOf(time
-                % 1000) + "мс");
-        System.out.println("Запросов к словарю: " 
-                + String.valueOf(getCountRequest()) 
-                + ". Успешно: " 
-                + String.valueOf(getCountSuccess()));
-        if (useCache) {
+                + "мс\nВремя анализа файла: " 
+                + String.valueOf((timeAnalyze - timeAnalyze % 1000)
+                / 1000) + "c " + String.valueOf(timeAnalyze % 1000) 
+                + "мс\nСлов прочитано: " 
+                + String.valueOf(countWords) 
+                + ". Из них распознано: " 
+                + String.valueOf(countObjDictSuccess 
+                + countCacheHit) + "\nУникальных известных словоформ: " 
+                + String.valueOf(countObjDictSuccess));
+        if (useCache)
             System.out.println("Cache hit: " 
-                    + String.valueOf(getCountCacheHit() + "."
-                    + " Cache miss: " 
-                    + String.valueOf(getCountCacheMiss())));
-            System.out.println("Запросов в секунду: " 
-                    + String.valueOf((getCountRequest() 
-                    + getCountCacheHit()) * 1000 / (timeEnd 
-                    - getTimeDictRead())));
-        } else
-            System.out.println("Запросов к словарю в секунду: " 
-                    + String.valueOf(getCountRequest() * 1000
-                    / (timeEnd - getTimeDictRead())));
+                    + String.valueOf(countCacheHit) + ". Cache miss"
+                    + ": " + String.valueOf(countObjDictRequest) 
+                    + "\nСкорость анализа: " 
+                    + String.valueOf(countWords * 1000 
+                    / timeAnalyze) + " слов в секунду.");
+        else
+            System.out.println("Скорость анализа: " 
+                    + String.valueOf(countWords * 1000
+                    / timeAnalyze) + " слов в секунду.");
     }
 }

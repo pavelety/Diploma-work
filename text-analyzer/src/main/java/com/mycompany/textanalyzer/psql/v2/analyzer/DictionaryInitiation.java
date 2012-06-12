@@ -1,7 +1,7 @@
-package com.mycompany.textanalyzer.analyzerpsql2;
+package com.mycompany.textanalyzer.psql.v2.analyzer;
 
-import com.mycompany.textanalyzer.dictionarypsql2.DBWriter;
-import com.mycompany.textanalyzer.dictionarypsql2.PSQLConnection;
+import com.mycompany.textanalyzer.psql.v2.dictionary.DBWriter;
+import com.mycompany.textanalyzer.psql.v2.dictionary.PSQLConnection;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -26,13 +26,13 @@ public class DictionaryInitiation {
         PSQLConnection connect = new PSQLConnection();
         try {
             connectionRus = connect.createConnection("rus");
-            initiateDictionaries(connectionRus, "rus", rmorphs, 
-                    rgramtab);
+//            initiateDictionaries(connectionRus, "rus", rmorphs, 
+//                    rgramtab);
             connectionEng = connect.createConnection("eng");
-            initiateDictionaries(connectionEng, "eng", emorphs, 
-                    egramtab);
-        } catch (IOException ex) {
-            ex.printStackTrace();
+//            initiateDictionaries(connectionEng, "eng", emorphs, 
+//                    egramtab);
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }    
@@ -41,8 +41,8 @@ public class DictionaryInitiation {
     private void initiateDictionaries(Connection connection, 
             String lang, String morphs, String gramtab) 
             throws IOException, SQLException {
-        //cleanTables(connection);
-        //new DBWriter(connection, lang, morphs, gramtab);
+        cleanTables(connection);
+        new DBWriter(connection, lang, morphs, gramtab);
     }
     
     public Connection getConnectionRus() {

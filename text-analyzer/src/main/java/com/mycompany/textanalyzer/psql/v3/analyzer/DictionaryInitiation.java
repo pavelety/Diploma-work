@@ -1,7 +1,7 @@
-package com.mycompany.textanalyzer.analyzerpsql3;
+package com.mycompany.textanalyzer.psql.v3.analyzer;
 
-import com.mycompany.textanalyzer.dictionarypsql3.DBWriter;
-import com.mycompany.textanalyzer.dictionarypsql3.PSQLConnection;
+import com.mycompany.textanalyzer.psql.v3.dictionary.DBWriter;
+import com.mycompany.textanalyzer.psql.v3.dictionary.PSQLConnection;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -22,7 +22,7 @@ public class DictionaryInitiation {
     private Connection connectionRus;
     private Connection connectionEng;
     
-    protected DictionaryInitiation(){
+    public DictionaryInitiation(){
         PSQLConnection connect = new PSQLConnection();
         try {
             connectionRus = connect.createConnection("rus");

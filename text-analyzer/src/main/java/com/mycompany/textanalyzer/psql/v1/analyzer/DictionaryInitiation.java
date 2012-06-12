@@ -2,17 +2,17 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.textanalyzer.analyzerpsql;
+package com.mycompany.textanalyzer.psql.v1.analyzer;
 
-import com.mycompany.textanalyzer.dictionarypsql.DictionaryReader;
-import com.mycompany.textanalyzer.dictionarypsql.GrammaReader;
-import com.mycompany.textanalyzer.dictionarypsql.PSQLConnection;
+import com.mycompany.textanalyzer.psql.v1.dictionary.DictionaryReader;
+import com.mycompany.textanalyzer.psql.v1.dictionary.GrammaReader;
+import com.mycompany.textanalyzer.psql.v1.dictionary.PSQLConnection;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- *
+ * Класс, инициирующий копирование словарей в БД словарей
  * @author pavel
  */
 public class DictionaryInitiation {

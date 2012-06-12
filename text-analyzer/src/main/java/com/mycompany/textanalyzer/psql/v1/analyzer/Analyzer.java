@@ -1,4 +1,4 @@
-package com.mycompany.textanalyzer.analyzerpsql;
+package com.mycompany.textanalyzer.psql.v1.analyzer;
 
 import com.mycompany.textanalyzer.AnalyzerInterface;
 import com.mycompany.textanalyzer.Statistics;
@@ -11,7 +11,9 @@ import java.util.Map;
 
 /**
  * Класс анализатора: делает морфологический анализ слова, используя
- * БД (1700 слов в секунду)
+ * БД dictionaryrus/eng 
+ * Поиск словоосновы ведется подбором: убирая по одной букве и проверяя.
+ * (1700 слов в секунду)
  * @author pavel
  */
 public class Analyzer implements AnalyzerInterface {
@@ -60,8 +62,8 @@ public class Analyzer implements AnalyzerInterface {
             Tokenizer token = new Tokenizer(textFilePath, encoding);
             String word = token.getWord();
             while (word != null) {
-            //for (int i = 1; i < 50; i++) {
-            //    System.out.println(i);
+//            for (int i = 1; i < 50; i++) {
+//                System.out.println(i);
                 analyzeWord(word, useCache);
                 word = token.getWord();
             }
@@ -73,6 +75,7 @@ public class Analyzer implements AnalyzerInterface {
     }
 
     private void analyzeWord(String word, boolean useCache) {
+        stats.increaseCountWords();
         if (useCache)
             analyzeInCache(word);
         else 
@@ -97,7 +100,6 @@ public class Analyzer implements AnalyzerInterface {
                 | word.codePointAt(0) >= 97 & word.codePointAt(0)
                 <= 122)
             if (searchInCache(engCache, word) == null) {
-                stats.increaseCountCacheMiss();
                 s = searchWord(psSelectLemmataEng, 
                         psSelectFlexiaEng, psSelectAncodesEng, 
                         word);
@@ -106,7 +108,6 @@ public class Analyzer implements AnalyzerInterface {
                 stats.increaseCountCacheHit();
         else
             if (searchInCache(rusCache, word) == null) {
-                stats.increaseCountCacheMiss();
                 s = searchWord(psSelectLemmataRus, 
                         psSelectFlexiaRus, psSelectAncodesRus,
                         word);

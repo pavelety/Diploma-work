@@ -1,4 +1,4 @@
-package com.mycompany.textanalyzer.dictionarypsql3;
+package com.mycompany.textanalyzer.psql.v3.dictionary;
 
 import java.io.*;
 import java.util.HashMap;

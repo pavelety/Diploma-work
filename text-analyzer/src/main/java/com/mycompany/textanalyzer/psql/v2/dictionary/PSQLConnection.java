@@ -1,4 +1,4 @@
-package com.mycompany.textanalyzer.dictionarypsql3;
+package com.mycompany.textanalyzer.psql.v2.dictionary;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,8 +11,8 @@ import java.sql.SQLException;
  */
 public class PSQLConnection {
     private final String urlPSQL = "jdbc:postgresql:";
-    private final String dictionaryDBRus = "dictionaryr";
-    private final String dictionaryDBEng = "dictionarye";
+    private final String dictionaryDBRus = "dictionaryru";
+    private final String dictionaryDBEng = "dictionaryen";
     private final String username = "pavel";
     private final String password = "123";
     private Connection connectionRus = null;

@@ -1,8 +1,9 @@
-package com.mycompany.textanalyzer.analyzerpsql4;
+package com.mycompany.textanalyzer.psql.v3_2.analyzer;
 
 import com.mycompany.textanalyzer.AnalyzerInterface;
 import com.mycompany.textanalyzer.Statistics;
 import com.mycompany.textanalyzer.Tokenizer;
+import com.mycompany.textanalyzer.psql.v3.analyzer.DictionaryInitiation;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,7 +12,10 @@ import java.util.Map;
 
 /**
  * Класс анализатора: делает морфологический анализ слова, используя
- * БД (9 слов в секунду)
+ * БД dictionaryr/e
+ * Поиск ведется с помощью трех запросов подбором: убирая по одной 
+ * букве и проверяя.
+ * (9 слов в секунду)
  * @author pavel
  */
 public class Analyzer implements AnalyzerInterface {
@@ -62,9 +66,9 @@ public class Analyzer implements AnalyzerInterface {
                     .prepareStatement(selectAncodes);
             Tokenizer token = new Tokenizer(textFilePath, encoding);
             String word = token.getWord();
-//            while (word != null) {
-            for (int i = 1; i < 1000; i++) {
-                System.out.println(i);
+            while (word != null) {
+//            for (int i = 1; i < 50; i++) {
+//                System.out.println(i);
                 analyzeWord(word, useCache);
                 word = token.getWord();
             }
@@ -76,6 +80,7 @@ public class Analyzer implements AnalyzerInterface {
     }
 
     private void analyzeWord(String word, boolean useCache) {
+        stats.increaseCountWords();
         if (useCache)
             analyzeInCache(word);
         else 
@@ -100,8 +105,7 @@ public class Analyzer implements AnalyzerInterface {
                 | word.codePointAt(0) >= 97 & word.codePointAt(0)
                 <= 122)
             if (searchInCache(engCache, word) == null) {
-                stats.increaseCountCacheMiss();
-                s = searchWord(psSelectLemmataEng, 
+               s = searchWord(psSelectLemmataEng, 
                         psSelectFlexiaEng, psSelectAncodesEng, 
                         word);
                 engCache.put(word, s == null ? "" : s);
@@ -109,7 +113,6 @@ public class Analyzer implements AnalyzerInterface {
                 stats.increaseCountCacheHit();
         else
             if (searchInCache(rusCache, word) == null) {
-                stats.increaseCountCacheMiss();
                 s = searchWord(psSelectLemmataRus, 
                         psSelectFlexiaRus, psSelectAncodesRus, 
                         word);
