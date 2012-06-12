@@ -34,8 +34,8 @@ public class DictionaryReader {
     public void process() throws IOException {
         try {
             BufferedReader bufferedReader = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(fileName),
-                    fileEncoding));
+                    new InputStreamReader(
+                    new FileInputStream(fileName), fileEncoding));
             readFlexias(bufferedReader);
             scipBlock(bufferedReader);
             scipBlock(bufferedReader);

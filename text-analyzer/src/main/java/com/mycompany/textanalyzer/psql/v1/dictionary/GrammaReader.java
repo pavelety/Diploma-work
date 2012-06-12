@@ -14,8 +14,8 @@ import java.sql.SQLException;
 * 
 */ 
 public class GrammaReader {
-    private final String insertAncodes = "insert into ancodes values"
-            + " (?, ?, ?)";
+    private final String insertAncodes = "insert into ancodes "
+            + "values (?, ?, ?)";
     
     public GrammaReader(String fileName, Connection connect) 
             throws IOException, SQLException {

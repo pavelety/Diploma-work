@@ -21,8 +21,8 @@ public class DBWriter {
             + "(baseStr) values (?)";
     private final String insertIntoSuffixes = "insert into suffixes"
             + " (suffix) values (?)";
-    private final String insertIntoParadigmNumber = "insert into paradigmnumber"
-            + " (id) values (?)";
+    private final String insertIntoParadigmNumber = "insert into "
+            + "paradigmnumber (id) values (?)";
     private final String insertIntoAncodesRus = "insert into "
             + "ancodes (ancode, partofspeechid, "
             + "genderid, animacyid, countid, caseid, aspectid, "
@@ -50,7 +50,8 @@ public class DBWriter {
     private List<List<FlexiaModel>> flexiaModels;
     private Map<String, Grammem> grammaDictionary;
     private Map<String, Integer> suffixes;
-    private Map<String, Integer> ancodes = new HashMap<String, Integer>();
+    private Map<String, Integer> ancodes = 
+            new HashMap<String, Integer>();
     private String lang;
     
     public DBWriter(Connection connection, String lang, 
@@ -70,7 +71,8 @@ public class DBWriter {
             writeAncodes();
             System.out.println("Ancodes are ready.");
             writeFlexiaModelsAndParadigmNumber();
-            System.out.println("FlexiaModels and ParadigmNumber are ready.");
+            System.out.println("FlexiaModels and ParadigmNumber are"
+                    + " ready.");
             writeBasesAndLexems();
             System.out.println("Lexems are ready.");
     }
@@ -81,7 +83,8 @@ public class DBWriter {
                     connection.prepareStatement(insertIntoSuffixes);
             int suffixId = 0;
             try {
-                for (Entry<String, Integer> suffix : suffixes.entrySet()){
+                for (Entry<String, Integer> suffix 
+                        : suffixes.entrySet()) {
                     suffixId++;
                     suffix.setValue(suffixId);
                     psSuffixes.setString(1, suffix.getKey());
@@ -104,23 +107,28 @@ public class DBWriter {
         try {
             PreparedStatement psAncodes;
             if (lang.equalsIgnoreCase("rus"))
-                psAncodes = connection.prepareStatement(insertIntoAncodesRus);
+                psAncodes = connection
+                        .prepareStatement(insertIntoAncodesRus);
             else
-                psAncodes = connection.prepareStatement(insertIntoAncodesEng);
+                psAncodes = connection
+                        .prepareStatement(insertIntoAncodesEng);
             String ancode;
             int ancodeId = 0;
             try {
-                for (Entry<String, Grammem> grammemEntry : grammaDictionary.entrySet()) {
+                for (Entry<String, Grammem> grammemEntry 
+                        : grammaDictionary.entrySet()) {
                     ancodeId++;
                     ancode = grammemEntry.getKey();
                     ancodes.put(ancode, ancodeId);
                     psAncodes.setString(1, ancode);
-                    grammemEntry.getValue().setAll(psAncodes).addBatch();
+                    grammemEntry.getValue().setAll(psAncodes)
+                            .addBatch();
                 }
                 psAncodes.executeBatch();
             } catch (SQLException ex) {
                 ex.printStackTrace();
-                System.out.println(ex.getNextException().toString());
+                System.out.println(ex.getNextException()
+                        .toString());
             } finally {
                 psAncodes.close();
             }
@@ -132,23 +140,27 @@ public class DBWriter {
     
     private void writeFlexiaModelsAndParadigmNumber() {
         try {
-            PreparedStatement psFlexiaModels = 
-                    connection.prepareStatement(insertIntoFlexiaModels);
-            PreparedStatement psParadigmNumber = 
-                    connection.prepareStatement(insertIntoParadigmNumber);
-            Iterator<List<FlexiaModel>> fm = flexiaModels.listIterator();
+            PreparedStatement psFlexiaModels = connection
+                    .prepareStatement(insertIntoFlexiaModels);
+            PreparedStatement psParadigmNumber = connection
+                    .prepareStatement(insertIntoParadigmNumber);
+            Iterator<List<FlexiaModel>> fm 
+                    = flexiaModels.listIterator();
             int paradigmId = 0;
             FlexiaModel flexia = null;
             try {
                 while (fm.hasNext()) {
                     psParadigmNumber.setInt(1, paradigmId);
                     psParadigmNumber.addBatch();
-                    Iterator<FlexiaModel> fmm = fm.next().listIterator();
+                    Iterator<FlexiaModel> fmm = fm.next()
+                            .listIterator();
                     while (fmm.hasNext()) {
                         flexia = fmm.next();
                         psFlexiaModels.setInt(1, paradigmId);
-                        psFlexiaModels.setInt(2, ancodes.get(flexia.getCode()));
-                        psFlexiaModels.setInt(3, suffixes.get(flexia.getSuffix()));
+                        psFlexiaModels.setInt(2, 
+                                ancodes.get(flexia.getCode()));
+                        psFlexiaModels.setInt(3, 
+                                suffixes.get(flexia.getSuffix()));
                         psFlexiaModels.addBatch();
                     }
                     if (paradigmId % 500 == 0) {
@@ -161,7 +173,8 @@ public class DBWriter {
                 psFlexiaModels.executeBatch();
             } catch (SQLException ex) {
                 ex.printStackTrace();
-                System.out.println(ex.getNextException().toString());
+                System.out.println(ex.getNextException()
+                        .toString());
             } finally {
                 psParadigmNumber.close();
                 psFlexiaModels.close();
@@ -187,7 +200,8 @@ public class DBWriter {
                     psBases.setString(1, wordBase);
                     psBases.addBatch();
                     psLexems.setInt(1, wordBaseId);
-                    psLexems.setInt(2, wordWithCard.getValue().getParadigmId());
+                    psLexems.setInt(2, wordWithCard.getValue()
+                            .getParadigmId());
                     psLexems.addBatch();
                     if (wordBaseId % 6000 == 0) {
                         psBases.executeBatch();
@@ -198,7 +212,8 @@ public class DBWriter {
                 psLexems.executeBatch();
             } catch (SQLException ex) {
                 ex.printStackTrace();
-                System.out.println(ex.getNextException().toString());
+                System.out.println(ex.getNextException()
+                        .toString());
             } finally {
                 psBases.close();
                 psLexems.close();

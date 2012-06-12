@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * Класс анализатора, который использует словарь, хранимый в объектах
  * классов (в оперативной памяти).
- * (35000 слов в секунду)
+ * (39957 слов в секунду)
  * @author pavel
  */
 public class Analyzer implements AnalyzerInterface {

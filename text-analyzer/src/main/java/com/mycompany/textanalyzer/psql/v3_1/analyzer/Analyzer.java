@@ -3,7 +3,8 @@ package com.mycompany.textanalyzer.psql.v3_1.analyzer;
 import com.mycompany.textanalyzer.AnalyzerInterface;
 import com.mycompany.textanalyzer.Statistics;
 import com.mycompany.textanalyzer.Tokenizer;
-import com.mycompany.textanalyzer.psql.v3.analyzer.DictionaryInitiation;
+import com.mycompany.textanalyzer.psql.v3.analyzer
+        .DictionaryInitiation;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,7 +15,7 @@ import java.util.Map;
  * Класс анализатора: делает морфологический анализ слова, используя
  * БД dictionaryr/e
  * Поиск ведется с помощью единого запроса, используя like
- * (? слова в секунду)
+ * (8 слова в секунду)
  * @author pavel
  */
 public class Analyzer implements AnalyzerInterface {
@@ -119,8 +120,8 @@ public class Analyzer implements AnalyzerInterface {
                     .prepareStatement(selectLexemEng);
             Tokenizer token = new Tokenizer(textFilePath, encoding);
             String word = token.getWord();
-            while (word != null) {
-//            for (int i = 1; i < 50; i++) {
+//            while (word != null) {
+            for (int i = 1; i < 1000; i++) {
 //                System.out.println(i);
                 analyzeWord(word, useCache);
                 word = token.getWord();

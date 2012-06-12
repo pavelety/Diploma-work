@@ -3,7 +3,8 @@ package com.mycompany.textanalyzer.psql.v3_2.analyzer;
 import com.mycompany.textanalyzer.AnalyzerInterface;
 import com.mycompany.textanalyzer.Statistics;
 import com.mycompany.textanalyzer.Tokenizer;
-import com.mycompany.textanalyzer.psql.v3.analyzer.DictionaryInitiation;
+import com.mycompany.textanalyzer.psql.v3.analyzer
+        .DictionaryInitiation;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,7 +16,7 @@ import java.util.Map;
  * БД dictionaryr/e
  * Поиск ведется с помощью трех запросов подбором: убирая по одной 
  * букве и проверяя.
- * (9 слов в секунду)
+ * (11 слов в секунду)
  * @author pavel
  */
 public class Analyzer implements AnalyzerInterface {
@@ -66,8 +67,8 @@ public class Analyzer implements AnalyzerInterface {
                     .prepareStatement(selectAncodes);
             Tokenizer token = new Tokenizer(textFilePath, encoding);
             String word = token.getWord();
-            while (word != null) {
-//            for (int i = 1; i < 50; i++) {
+//            while (word != null) {
+            for (int i = 1; i < 1000; i++) {
 //                System.out.println(i);
                 analyzeWord(word, useCache);
                 word = token.getWord();

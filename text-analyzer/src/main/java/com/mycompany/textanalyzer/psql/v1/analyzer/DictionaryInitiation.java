@@ -4,7 +4,8 @@
  */
 package com.mycompany.textanalyzer.psql.v1.analyzer;
 
-import com.mycompany.textanalyzer.psql.v1.dictionary.DictionaryReader;
+import com.mycompany.textanalyzer.psql.v1.dictionary
+        .DictionaryReader;
 import com.mycompany.textanalyzer.psql.v1.dictionary.GrammaReader;
 import com.mycompany.textanalyzer.psql.v1.dictionary.PSQLConnection;
 import java.io.IOException;
@@ -55,7 +56,8 @@ public class DictionaryInitiation {
         new DictionaryReader(rmorphs, connectionRus);
     }
     
-    private void initiateEngDictionaries() throws IOException, SQLException {
+    private void initiateEngDictionaries() throws IOException, 
+            SQLException {
         connectionEng.prepareStatement("delete from lemmata")
                 .executeUpdate();
         connectionEng.prepareStatement("delete from flexiamodels")

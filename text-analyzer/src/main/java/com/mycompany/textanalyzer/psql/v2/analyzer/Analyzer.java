@@ -13,19 +13,19 @@ import java.util.Map;
  * Класс анализатора: делает морфологический анализ слова, используя
  * БД dictionaryru/en
  * Иcпользован like (запрос разбит на 2)
- * (<1 слова в секунду)
+ * (1 слово в секунду)
  * @author pavel
  */
 public class Analyzer implements AnalyzerInterface {
     private final String selectGrammemId = "select grammeminfo.id"
             + " from grammeminfo, bases, suffixes where ? like "
-            + "bases.baseStr||'%' and grammeminfo.baseStrId=bases.id "
-            + "and bases.baseStr||suffixes.suffix=? and "
+            + "bases.baseStr||'%' and grammeminfo.baseStrId="
+            + "bases.id and bases.baseStr||suffixes.suffix=? and "
             + "grammeminfo.suffixid=suffixes.id";
-    private final String selectGrammemInfoEng = "select bases.basestr,"
-            + " suffixes.suffix, partsOfSpeeches.type, genders.type"
-            + ", count.type, cases.type, PNForms.type, "
-            + "AdDegrees.type, tenses.type, typesOfPerson.type, "
+    private final String selectGrammemInfoEng = "select "
+            + "bases.basestr, suffixes.suffix, partsOfSpeeches.type"
+            + ", genders.type, count.type, cases.type, PNForms.type"
+            + ", AdDegrees.type, tenses.type, typesOfPerson.type, "
             + "PNTypes.type, commonName.type, geographical.type, "
             + "properName.type, plsg.type, name.type, "
             + "organization.type from grammeminfo, bases, suffixes,"
@@ -131,8 +131,8 @@ public class Analyzer implements AnalyzerInterface {
                     .prepareStatement(selectGrammemInfoEng);
             Tokenizer token = new Tokenizer(textFilePath, encoding);
             String word = token.getWord();
-            while (word != null) {
-//            for (int i = 1; i < 50; i++) {
+//            while (word != null) {
+            for (int i = 1; i < 1000; i++) {
 //                System.out.println(i);
                 analyzeWord(word, useCache);
                 word = token.getWord();

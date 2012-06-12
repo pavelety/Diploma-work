@@ -55,7 +55,8 @@ public class Statistics {
                 + String.valueOf(countWords) 
                 + ". Из них распознано: " 
                 + String.valueOf(countObjDictSuccess 
-                + countCacheHit) + "\nУникальных известных словоформ: " 
+                + countCacheHit) + "\nУникальных известных "
+                + "словоформ: "
                 + String.valueOf(countObjDictSuccess));
         if (useCache)
             System.out.println("Cache hit: " 

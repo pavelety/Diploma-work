@@ -13,7 +13,7 @@ import java.util.Map;
  * Класс анализатора: делает морфологический анализ слова, используя
  * БД dictionaryr/e
  * Поиск ведется с помощью двух запросов, используя like
- * (4 слова в секунду)
+ * (6 слова в секунду)
  * @author pavel
  */
 public class Analyzer implements AnalyzerInterface {
@@ -26,20 +26,21 @@ public class Analyzer implements AnalyzerInterface {
             + "flexiamodels.ancodeid=ancodes.id";
     private final String selectLexemEng = "select bases.basestr, "
             + "suffixes.suffix, partsOfSpeeches.type"
-            + ", genders.type, count.type, cases.type, PNForms.type, "
-            + "AdDegrees.type, tenses.type, typesOfPerson.type, "
+            + ", genders.type, count.type, cases.type, PNForms.type"
+            + ", AdDegrees.type, tenses.type, typesOfPerson.type, "
             + "PNTypes.type, commonName.type, geographical.type, "
             + "properName.type, plsg.type, name.type, "
             +  "organization.type"
             + " from ancodes, lexems, flexiamodels, bases, suffixes"
             + ", partsOfSpeeches" 
-            + ", genders, count, cases, PNForms, AdDegrees, tenses, "
-            + "typesOfPerson, PNTypes, commonName, geographical, "
+            + ", genders, count, cases, PNForms, AdDegrees, tenses,"
+            + " typesOfPerson, PNTypes, commonName, geographical, "
             + "properName, plsg, name, organization"
             + " where bases.id=? and lexems.baseStrId=bases.id and "
-            + "bases.basestr||suffixes.suffix=? and lexems.paradigmid="
-            + "flexiamodels.paradigmid and flexiamodels.suffixid=suffixes.id "
-            + "and flexiamodels.ancodeid=ancodes.id and "
+            + "bases.basestr||suffixes.suffix=? and "
+            + "lexems.paradigmid=flexiamodels.paradigmid and "
+            + "flexiamodels.suffixid=suffixes.id and "
+            + "flexiamodels.ancodeid=ancodes.id and "
             + "ancodes.partOfSpeechId=partsOfSpeeches.id"
             + "and ancodes.genderId=genders.id and ancodes.countId="
             + "count.id and ancodes.caseId=cases.id and "
@@ -133,8 +134,8 @@ public class Analyzer implements AnalyzerInterface {
                     .prepareStatement(selectLexemEng);
             Tokenizer token = new Tokenizer(textFilePath, encoding);
             String word = token.getWord();
-            while (word != null) {
-//            for (int i = 1; i < 50; i++) {
+//            while (word != null) {
+            for (int i = 1; i < 1000; i++) {
 //                System.out.println(i);
                 analyzeWord(word, useCache);
                 word = token.getWord();
